@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # coding:utf-8
+
 """
-use Katalon Recorder plugin in Chrome to record operation,
-and export python code
+use Katalon Recorder plugin in Chrome to record operations, and export python
+code for reference.
+use service in http://www.ruokuai.com/home/pricetype to recognize captcha
+images.
 
 """
 
