@@ -12,6 +12,8 @@ images.
 import requests
 from hashlib import md5
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import re
 from PIL import Image
 import time
@@ -137,7 +139,10 @@ class CyhWebsite(object):
 
 
 if __name__ == '__main__':
-    driver = webdriver.Chrome()
+    chrome_options = Options()
+#   chrome_options.add_argument("--headless")       # define headless
+    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(),
+                              options=chrome_options)
     website = CyhWebsite(
             driver, website_login_url, website_username, website_password)
     website.login_with_captcha(ruokuai_username, ruokuai_password,
