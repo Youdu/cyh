@@ -9,6 +9,8 @@ images.
 
 """
 
+__login_url__ = 'http://1688552.com/caiYouHuiLoginWeb/app/loginVerification?'
+
 import requests
 from hashlib import md5
 from selenium import webdriver

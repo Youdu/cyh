@@ -11,6 +11,8 @@ from bs4 import BeautifulSoup
 import re
 
 url = "https://en.wikipedia.org/wiki/Kevin_Bacon"
+url_cyh = 'http://1688552.com/caiYouHuiLoginWeb/app/home?ref=ddd643'
+# url_cyh = "http://1688552.com"
 # =============================================================================
 # hdr = {
 #        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,\
@@ -30,10 +32,18 @@ url = "https://en.wikipedia.org/wiki/Kevin_Bacon"
 #       }
 # req = Request(url, headers=hdr)
 # =============================================================================
-html = urlopen(url)
+
+html = urlopen(url_cyh)
 bs = BeautifulSoup(html, 'html.parser')
-body_content = bs.find('div', {'id': 'bodyContent'})
-links = body_content.find_all('a', href=re.compile('^(/wiki/)((?!:).)*$'))
-for link in links:
-    if 'href' in link.attrs:
-        print(link.attrs['href'])
+print(bs.prettify())
+
+# =============================================================================
+# html = urlopen(url)
+# bs = BeautifulSoup(html, 'html.parser')
+# body_content = bs.find('div', {'id': 'bodyContent'})
+# links = body_content.find_all('a', href=re.compile('^(/wiki/)((?!:).)*$'))
+# for link in links:
+#     if 'href' in link.attrs:
+#         print(link.attrs['href'])
+# 
+# =============================================================================
