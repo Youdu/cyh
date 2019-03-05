@@ -11,3 +11,5 @@ if __name__ == '__main__':
     manager = SiteManager()
     site_caiyouhui = manager.Create("http://1688552.com", username='pig', password='pigyear0214')
     site_weinisi = manager.Create("http://138nan.com")
+    site_weinisi.login()
+    site_weinisi.gamble_jisusaiche_a()
