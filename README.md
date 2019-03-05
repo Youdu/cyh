@@ -1,2 +1,2 @@
-# cyh
-operate cai you hui website with selenium.
+# main.py
+程序入口
