@@ -7,6 +7,7 @@
 
 from .cai_you_hui import CaiYouHui
 from .wei_ni_si import WeiNiSi
+from .chuang_ming import ChuangMing
 
 class SiteManager:
     """站点管理类
@@ -16,12 +17,13 @@ class SiteManager:
     site_map = {
             'http://1688552.com': CaiYouHui,
             'http://138nan.com': WeiNiSi,
+            'http://cm557.com': ChuangMing,
             }
 
     def __init__(self, *args, **kwargs):
         pass
     
-    def Create(self, url, *args, **kwargs):
+    def create(self, url, *args, **kwargs):
         """由url地址创建对应的站点"""
         
         try:
