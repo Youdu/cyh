@@ -1,0 +1,3 @@
+pyttsx3
+pypiwin32
+webdriver_manager

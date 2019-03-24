@@ -22,6 +22,7 @@ class SiteBase:
         try:
             self.username = kwargs['username']
             self.password = kwargs['password']
+            self.speaker = kwargs['speaker']
         except KeyError as err:
             raise Exception("参数缺失{}".format(err))
 

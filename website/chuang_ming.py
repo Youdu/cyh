@@ -22,8 +22,6 @@ class ChuangMing(SiteBase):
     
     __url__ = "http://cm557.com"
     __url_record = "http://cm557.com/mobile/new_pc_1/index.html#/gameHome/7"
-    __url_xingyunfeiting = "http://cm557.com/mobile/new_pc_1/index.html#/2/85"
-    __url_beijing_pk10 = "http://cm557.com/mobile/new_pc_1/index.html#/2/68"
     __url_item = "http://cm557.com/mobile/new_pc_1/index.html#/2/{}"
     __gamble_count = 0
 
@@ -88,281 +86,6 @@ class ChuangMing(SiteBase):
     def get_acount_info(self):
         pass
     
-    def gamble_xingyunfeiting(self, wager):
-        """下注幸运飞艇"""
-        
-        print("下注幸运飞艇")
-        driver = self.driver
-        
-        # 打开幸运飞艇
-        driver.get(self.__url_xingyunfeiting)
-        
-        # 等待显示有效期数
-        season_num_elem = WebDriverWait(driver, 10).until(
-                    element_has_valid_season_num((By.XPATH, '//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[1]/p[2]/span'))
-                    )
-        season_num_str = season_num_elem.text
-        if len(season_num_str) > 0:
-            print("幸运飞艇第{}期".format(season_num_str))
-        else :
-            raise Exception("页面信息加载错误，应显示幸运飞艇第xxxxxxxxxxx期")
-        
-        # 获取截止投注时间
-         # 等待显示有效倒计时，秒数不是0
-        season_num_elem = WebDriverWait(driver, 10).until(
-                    element_has_valid_count_down((By.XPATH, '//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[2]/span[5]'))
-                    )
-        hour_str = driver.find_element_by_xpath('//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[2]/span[1]').text
-        hour = int(hour_str)
-        minute_str = driver.find_element_by_xpath('//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[2]/span[3]').text
-        minute = int(minute_str)
-        second_str = driver.find_element_by_xpath('//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[2]/span[5]').text
-        second = int(second_str)
-        print("距离截止投注时间还有：{}时{}分{}秒".format(hour, minute, second))
-        
-        if hour == 0 and minute < 1:
-            print("距离下注截止时间太短，暂不下注")
-            return False
-        
-        # 下注幸运飞艇->冠军
-        self.xingyunfeiting_guanjun(wager[1])
-        return True
-    
-    def xingyunfeiting_guanjun(self, wager):
-        print("下注幸运飞艇->冠军")
-        wager_dic = {
-                    u'[冠军] 1': wager[0],
-                    u'[冠军] 2': wager[1],
-                    u'[冠军] 3': wager[2],
-                    u'[冠军] 4': wager[3],
-                    u'[冠军] 5': wager[4],
-                    u'[冠军] 6': wager[5],
-                    u'[冠军] 7': wager[6],
-                    u'[冠军] 8': wager[7],
-                    u'[冠军] 9': wager[8],
-                    u'[冠军] 10': wager[9],
-                    u'[冠军] 大': wager[10],
-                    u'[冠军] 小': wager[11],
-                    u'[冠军] 单': wager[12],
-                    u'[冠军] 双': wager[13],
-                    u'[冠军] 龙': wager[14],
-                    u'[冠军] 虎': wager[15],
-                }
-        driver = self.driver
-        # 滚动页面到顶部
-        driver.execute_script("window.scrollTo(0, 0);")
-        # 点击幸运飞艇->冠军
-        driver.find_element_by_xpath('//*[@id="85"]/div[2]/div/div[3]/div[1]/nav/ul/li[2]').click()
-        # 点击冠军1，冠军2，......，大，小，单，双，龙，虎
-        for i in range(0, len(wager)):
-            if wager[i] > 0:
-                xpath = '//*[@id="85"]/div[2]/div/div[3]/div[1]/div[1]/div[2]/ul/li[{}]'.format(i+1)
-                driver.find_element_by_xpath(xpath).click()
-        
-        for i in range(0, len(wager)):
-            xpath_key = '//*[@id="85"]/div[2]/div/div[3]/div[1]/div[2]/div[3]/div[1]/ul[{}]/li[1]'.format(i+1)
-            xpath_value = '//*[@id="85"]/div[2]/div/div[3]/div[1]/div[2]/div[3]/div[1]/ul[{}]/li[2]/input'.format(i+1)
-            try:
-                key_elem = driver.find_element_by_xpath(xpath_key)
-                value_elem = driver.find_element_by_xpath(xpath_value)
-                value_elem.click()
-                value_elem.clear()
-                value_elem.send_keys(str(wager_dic[key_elem.text]))
-            except NoSuchElementException:
-                pass
-        
-        # 点击立即投注
-        driver.find_element_by_xpath('//*[@id="85"]/div[2]/div/div[3]/div[1]/div[2]/button').click()
-
-    def wait_xingyunfeiting_result(self):
-        """等待幸运飞艇开奖结果"""
-        
-        print("等待幸运飞艇开奖结果")
-        driver = self.driver
-        
-        # 打开幸运飞艇
-        driver.get(self.__url_xingyunfeiting)
-        
-        # 等待显示有效期数
-        season_num_elem = WebDriverWait(driver, 10).until(
-                    element_has_valid_season_num((By.XPATH, '//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[1]/p[2]/span'))
-                    )
-        season_num_str = season_num_elem.text
-        if len(season_num_str) > 0:
-            print("幸运飞艇第{}期".format(season_num_str))
-        else :
-            raise Exception("页面信息加载错误，应显示幸运飞艇第xxxxxxxxxxx期")
-        
-        # 获取截止投注时间
-         # 等待显示有效倒计时，秒数不是0
-        season_num_elem = WebDriverWait(driver, 10).until(
-                    element_has_valid_count_down((By.XPATH, '//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[2]/span[5]'))
-                    )
-        hour_str = driver.find_element_by_xpath('//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[2]/span[1]').text
-        hour = int(hour_str)
-        minute_str = driver.find_element_by_xpath('//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[2]/span[3]').text
-        minute = int(minute_str)
-        second_str = driver.find_element_by_xpath('//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[2]/span[5]').text
-        second = int(second_str)
-        print("距离截止投注时间还有：{}时{}分{}秒".format(hour, minute, second))
-        
-        first_total_sec = hour * 3600 + minute * 60 + second
-        total_sec = first_total_sec
-        displayed_time = total_sec
-        
-        while total_sec != 0 and first_total_sec >= total_sec:
-            if total_sec != displayed_time and total_sec % 10 == 0:
-                print("距离截止投注时间还有：{}时{}分{}秒".format(hour, minute, second))
-                displayed_time = total_sec
-            time.sleep(0.5)
-            hour_str = driver.find_element_by_xpath('//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[2]/span[1]').text
-            hour = int(hour_str)
-            minute_str = driver.find_element_by_xpath('//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[2]/span[3]').text
-            minute = int(minute_str)
-            second_str = driver.find_element_by_xpath('//*[@id="85"]/div[2]/div/div[2]/div[1]/div/div[2]/span[5]').text
-            second = int(second_str)
-            total_sec = hour * 3600 + minute * 60 + second
-        
-        print("幸运飞艇开奖") 
-    
-    def gamble_beijing_pk10(self, wager):
-        """下注北京PK10"""
-        
-        print("下注北京PK10")
-        driver = self.driver
-        
-        # 打开幸运飞艇
-        driver.get(self.__url_beijing_pk10)
-        
-        # 等待显示有效期数
-        season_num_elem = WebDriverWait(driver, 10).until(
-                    element_has_valid_season_num((By.XPATH, '//*[@id="68"]/div[2]/div/div[2]/div[1]/div/div[1]/p[2]/span'))
-                    )
-        season_num_str = season_num_elem.text
-        if len(season_num_str) > 0:
-            print("北京PK10第{}期".format(season_num_str))
-        else :
-            raise Exception("页面信息加载错误，应显示北京PK10第xxxxxxxxxxx期")
-        
-        # 获取截止投注时间
-         # 等待显示有效倒计时，秒数不是0
-        season_num_elem = WebDriverWait(driver, 10).until(
-                    element_has_valid_count_down((By.XPATH, '//*[@id="68"]/div[2]/div/div[2]/div[1]/div/div[2]/span[5]'))
-                    )
-        hour_str = driver.find_element_by_xpath('//*[@id="68"]/div[2]/div/div[2]/div[1]/div/div[2]/span[1]').text
-        hour = int(hour_str)
-        minute_str = driver.find_element_by_xpath('//*[@id="68"]/div[2]/div/div[2]/div[1]/div/div[2]/span[3]').text
-        minute = int(minute_str)
-        second_str = driver.find_element_by_xpath('//*[@id="68"]/div[2]/div/div[2]/div[1]/div/div[2]/span[5]').text
-        second = int(second_str)
-        print("距离截止投注时间还有：{}时{}分{}秒".format(hour, minute, second))
-        
-        if hour == 0 and minute < 1:
-            print("距离下注截止时间太短，暂不下注")
-            return False
-        
-        # 下注北京PK10->冠军
-        self.beijing_pk10_num1(wager[1])
-        return True
-
-    def beijing_pk10_num1(self, wager):
-        print("下注北京PK10->冠军")
-        wager_dic = {
-                    u'[冠军] 1': wager[0],
-                    u'[冠军] 2': wager[1],
-                    u'[冠军] 3': wager[2],
-                    u'[冠军] 4': wager[3],
-                    u'[冠军] 5': wager[4],
-                    u'[冠军] 6': wager[5],
-                    u'[冠军] 7': wager[6],
-                    u'[冠军] 8': wager[7],
-                    u'[冠军] 9': wager[8],
-                    u'[冠军] 10': wager[9],
-                    u'[冠军] 大': wager[10],
-                    u'[冠军] 小': wager[11],
-                    u'[冠军] 单': wager[12],
-                    u'[冠军] 双': wager[13],
-                    u'[冠军] 龙': wager[14],
-                    u'[冠军] 虎': wager[15],
-                }
-        driver = self.driver
-        wait = WebDriverWait(driver, 10)
-        # 滚动页面到顶部
-        driver.execute_script("window.scrollTo(0, 0);")
-        # 点击北京PK10->冠军
-        driver.find_element_by_xpath('//*[@id="68"]/div[2]/div/div[3]/div[1]/nav/ul/li[2]').click()
-        # 点击冠军1，冠军2，......，大，小，单，双，龙，虎
-        for i in range(0, len(wager)):
-            if wager[i] > 0:
-                xpath = '//*[@id="68"]/div[2]/div/div[3]/div[1]/div[1]/div[2]/ul/li[{}]'.format(i+1)
-                driver.find_element_by_xpath(xpath).click()
-        
-        for i in range(0, len(wager)):
-            xpath_key = '//*[@id="68"]/div[2]/div/div[3]/div[1]/div[2]/div[3]/div[1]/ul[{}]/li[1]'.format(i+1)
-            xpath_value = '//*[@id="68"]/div[2]/div/div[3]/div[1]/div[2]/div[3]/div[1]/ul[{}]/li[2]/input'.format(i+1)
-            try:
-                key_elem = driver.find_element_by_xpath(xpath_key)
-                value_elem = driver.find_element_by_xpath(xpath_value)
-                value_elem.click()
-                value_elem.clear()
-                value_elem.send_keys(str(wager_dic[key_elem.text]))
-            except NoSuchElementException:
-                pass
-        
-        # 点击立即投注
-        driver.find_element_by_xpath('//*[@id="68"]/div[2]/div/div[3]/div[1]/div[2]/button').click()
-        # 等待可再次下注
-        wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="68"]/div[2]/div/div[3]/div[1]/div[2]/button')))
-    
-    def beijing_pk10_num2(self, wager):
-        print("下注北京PK10->亚军")
-        wager_dic = {
-                    u'[亚军] 1': wager[0],
-                    u'[亚军] 2': wager[1],
-                    u'[亚军] 3': wager[2],
-                    u'[亚军] 4': wager[3],
-                    u'[亚军] 5': wager[4],
-                    u'[亚军] 6': wager[5],
-                    u'[亚军] 7': wager[6],
-                    u'[亚军] 8': wager[7],
-                    u'[亚军] 9': wager[8],
-                    u'[亚军] 10': wager[9],
-                    u'[亚军] 大': wager[10],
-                    u'[亚军] 小': wager[11],
-                    u'[亚军] 单': wager[12],
-                    u'[亚军] 双': wager[13],
-                    u'[亚军] 龙': wager[14],
-                    u'[亚军] 虎': wager[15],
-                }
-        driver = self.driver
-        wait = WebDriverWait(driver, 10)
-        # 滚动页面到顶部
-        driver.execute_script("window.scrollTo(0, 0);")
-        # 点击北京PK10->冠军
-        driver.find_element_by_xpath('//*[@id="68"]/div[2]/div/div[3]/div[1]/nav/ul/li[2]').click()
-        # 点击冠军1，冠军2，......，大，小，单，双，龙，虎
-        for i in range(0, len(wager)):
-            if wager[i] > 0:
-                xpath = '//*[@id="68"]/div[2]/div/div[3]/div[1]/div[1]/div[3]/ul/li[{}]'.format(i+1)
-                driver.find_element_by_xpath(xpath).click()
-        
-        for i in range(0, len(wager)):
-            xpath_key = '//*[@id="68"]/div[2]/div/div[3]/div[1]/div[2]/div[4]/div[1]/ul[{}]/li[1]'.format(i+1)
-            xpath_value = '//*[@id="68"]/div[2]/div/div[3]/div[1]/div[2]/div[4]/div[1]/ul[{}]/li[2]/input'.format(i+1)
-            try:
-                key_elem = driver.find_element_by_xpath(xpath_key)
-                value_elem = driver.find_element_by_xpath(xpath_value)
-                value_elem.click()
-                value_elem.clear()
-                value_elem.send_keys(str(wager_dic[key_elem.text]))
-            except NoSuchElementException:
-                pass
-        
-        # 点击立即投注 
-        driver.find_element_by_xpath('//*[@id="68"]/div[2]/div/div[3]/div[1]/div[2]/button').click()
-        # 等待可再次下注
-        wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="68"]/div[2]/div/div[3]/div[1]/div[2]/button')))
-    
     # 项目的XPATH定位表
     id_table = {
             '北京PK10': 68,
@@ -380,6 +103,54 @@ class ChuangMing(SiteBase):
             9: '第九名',
             10: '第十名'}
     
+    def get_item_key_index(self, item_num):
+        name = self.name_table[item_num]
+        if item_num >= 1:
+            key_index = {
+                    0: '[{}] 1'.format(name),
+                    1: '[{}] 2'.format(name),
+                    2: '[{}] 3'.format(name),
+                    3: '[{}] 4'.format(name),
+                    4: '[{}] 5'.format(name),
+                    5: '[{}] 6'.format(name),
+                    6: '[{}] 7'.format(name),
+                    7: '[{}] 8'.format(name),
+                    8: '[{}] 9'.format(name),
+                    9: '[{}] 10'.format(name),
+                    10: '[{}] 大'.format(name),
+                    11: '[{}] 小'.format(name),
+                    12: '[{}] 单'.format(name),
+                    13: '[{}] 双'.format(name),
+                    14: '[{}] 龙'.format(name),
+                    15: '[{}] 虎'.format(name),
+                }
+        else: # 冠、亚军和
+            key_index = {
+                    0: '[{}] 冠亚大'.format(name),
+                    1: '[{}] 冠亚小'.format(name),
+                    2: '[{}] 冠亚单'.format(name),
+                    3: '[{}] 冠亚双'.format(name),
+                    4: '[{}] 3'.format(name),
+                    5: '[{}] 4'.format(name),
+                    6: '[{}] 5'.format(name),
+                    7: '[{}] 6'.format(name),
+                    8: '[{}] 7'.format(name),
+                    9: '[{}] 8'.format(name),
+                    10: '[{}] 9'.format(name),
+                    11: '[{}] 10'.format(name),
+                    12: '[{}] 11'.format(name),
+                    13: '[{}] 12'.format(name),
+                    14: '[{}] 13'.format(name),
+                    15: '[{}] 14'.format(name),
+                    16: '[{}] 15'.format(name),
+                    17: '[{}] 16'.format(name),
+                    18: '[{}] 17'.format(name),
+                    19: '[{}] 18'.format(name),
+                    20: '[{}] 19'.format(name),
+                }
+        
+        return key_index        
+    
     # 组装和下注项目对应的下注金额
     def get_sub_wager(self, item_num, wager):
         name = self.name_table[item_num]
@@ -387,47 +158,47 @@ class ChuangMing(SiteBase):
         if item_num >= 1:
             if wager[name]:
                 wager_dic = {
-                        '[{}] 1'.format(name): wager[name][1],
-                        '[{}] 2'.format(name): wager[name][2],
-                        '[{}] 3'.format(name): wager[name][3],
-                        '[{}] 4'.format(name): wager[name][4],
-                        '[{}] 5'.format(name): wager[name][5],
-                        '[{}] 6'.format(name): wager[name][6],
-                        '[{}] 7'.format(name): wager[name][7],
-                        '[{}] 8'.format(name): wager[name][8],
-                        '[{}] 9'.format(name): wager[name][9],
-                        '[{}] 10'.format(name): wager[name][10],
-                        '[{}] 大'.format(name): wager[name]['大'],
-                        '[{}] 小'.format(name): wager[name]['小'],
-                        '[{}] 单'.format(name): wager[name]['单'],
-                        '[{}] 双'.format(name): wager[name]['双'],
-                        '[{}] 龙'.format(name): wager[name]['龙'],
-                        '[{}] 虎'.format(name): wager[name]['虎'],
+                        '[{}] 1'.format(name): wager[name][1] if 1 in wager[name] else 0,
+                        '[{}] 2'.format(name): wager[name][2] if 2 in wager[name] else 0,
+                        '[{}] 3'.format(name): wager[name][3] if 3 in wager[name] else 0,
+                        '[{}] 4'.format(name): wager[name][4] if 4 in wager[name] else 0,
+                        '[{}] 5'.format(name): wager[name][5] if 5 in wager[name] else 0,
+                        '[{}] 6'.format(name): wager[name][6] if 6 in wager[name] else 0,
+                        '[{}] 7'.format(name): wager[name][7] if 7 in wager[name] else 0,
+                        '[{}] 8'.format(name): wager[name][8] if 8 in wager[name] else 0,
+                        '[{}] 9'.format(name): wager[name][9] if 9 in wager[name] else 0,
+                        '[{}] 10'.format(name): wager[name][10] if 10 in wager[name] else 0,
+                        '[{}] 大'.format(name): wager[name]['大'] if '大' in wager[name] else 0,
+                        '[{}] 小'.format(name): wager[name]['小'] if '小' in wager[name] else 0,
+                        '[{}] 单'.format(name): wager[name]['单'] if '单' in wager[name] else 0,
+                        '[{}] 双'.format(name): wager[name]['双'] if '双' in wager[name] else 0,
+                        '[{}] 龙'.format(name): wager[name]['龙'] if '龙' in wager[name] else 0,
+                        '[{}] 虎'.format(name): wager[name]['虎'] if '虎' in wager[name] else 0,
                     }
-        else : # 冠、亚军和
+        else: # 冠、亚军和
             if wager['冠亚军和']:
                 wager_dic = {
-                        '[{}] 冠亚大'.format(name): wager['冠亚军和']['冠亚大'],
-                        '[{}] 冠亚小'.format(name): wager['冠亚军和']['冠亚小'],
-                        '[{}] 冠亚单'.format(name): wager['冠亚军和']['冠亚单'],
-                        '[{}] 冠亚双'.format(name): wager['冠亚军和']['冠亚双'],
-                        '[{}] 3'.format(name): wager['冠亚军和'][3],
-                        '[{}] 4'.format(name): wager['冠亚军和'][4],
-                        '[{}] 5'.format(name): wager['冠亚军和'][5],
-                        '[{}] 6'.format(name): wager['冠亚军和'][6],
-                        '[{}] 7'.format(name): wager['冠亚军和'][7],
-                        '[{}] 8'.format(name): wager['冠亚军和'][8],
-                        '[{}] 9'.format(name): wager['冠亚军和'][9],
-                        '[{}] 10'.format(name): wager['冠亚军和'][10],
-                        '[{}] 11'.format(name): wager['冠亚军和'][11],
-                        '[{}] 12'.format(name): wager['冠亚军和'][12],
-                        '[{}] 13'.format(name): wager['冠亚军和'][13],
-                        '[{}] 14'.format(name): wager['冠亚军和'][14],
-                        '[{}] 15'.format(name): wager['冠亚军和'][15],
-                        '[{}] 16'.format(name): wager['冠亚军和'][16],
-                        '[{}] 17'.format(name): wager['冠亚军和'][17],
-                        '[{}] 18'.format(name): wager['冠亚军和'][18],
-                        '[{}] 19'.format(name): wager['冠亚军和'][19],
+                        '[{}] 冠亚大'.format(name): wager['冠亚军和']['冠亚大'] if '冠亚大' in wager['冠亚军和'] else 0,
+                        '[{}] 冠亚小'.format(name): wager['冠亚军和']['冠亚小'] if '冠亚小' in wager['冠亚军和'] else 0,
+                        '[{}] 冠亚单'.format(name): wager['冠亚军和']['冠亚单'] if '冠亚单' in wager['冠亚军和'] else 0,
+                        '[{}] 冠亚双'.format(name): wager['冠亚军和']['冠亚双'] if '冠亚双' in wager['冠亚军和'] else 0,
+                        '[{}] 3'.format(name): wager['冠亚军和'][3] if 3 in wager['冠亚军和'] else 0,
+                        '[{}] 4'.format(name): wager['冠亚军和'][4] if 4 in wager['冠亚军和'] else 0,
+                        '[{}] 5'.format(name): wager['冠亚军和'][5] if 5 in wager['冠亚军和'] else 0,
+                        '[{}] 6'.format(name): wager['冠亚军和'][6] if 6 in wager['冠亚军和'] else 0,
+                        '[{}] 7'.format(name): wager['冠亚军和'][7] if 7 in wager['冠亚军和'] else 0,
+                        '[{}] 8'.format(name): wager['冠亚军和'][8] if 8 in wager['冠亚军和'] else 0,
+                        '[{}] 9'.format(name): wager['冠亚军和'][9] if 9 in wager['冠亚军和'] else 0,
+                        '[{}] 10'.format(name): wager['冠亚军和'][10] if 10 in wager['冠亚军和'] else 0,
+                        '[{}] 11'.format(name): wager['冠亚军和'][11] if 11 in wager['冠亚军和'] else 0,
+                        '[{}] 12'.format(name): wager['冠亚军和'][12] if 12 in wager['冠亚军和'] else 0,
+                        '[{}] 13'.format(name): wager['冠亚军和'][13] if 13 in wager['冠亚军和'] else 0,
+                        '[{}] 14'.format(name): wager['冠亚军和'][14] if 14 in wager['冠亚军和'] else 0,
+                        '[{}] 15'.format(name): wager['冠亚军和'][15] if 15 in wager['冠亚军和'] else 0,
+                        '[{}] 16'.format(name): wager['冠亚军和'][16] if 16 in wager['冠亚军和'] else 0,
+                        '[{}] 17'.format(name): wager['冠亚军和'][17] if 17 in wager['冠亚军和'] else 0,
+                        '[{}] 18'.format(name): wager['冠亚军和'][18] if 18 in wager['冠亚军和'] else 0,
+                        '[{}] 19'.format(name): wager['冠亚军和'][19] if 19 in wager['冠亚军和'] else 0,
                     }
         
         return wager_dic
@@ -446,8 +217,8 @@ class ChuangMing(SiteBase):
         last_season_num_str = "0"
         # 等待上一期的开奖结果显示在今日开奖列表中
         print("等待上一期开奖")
-        tick = 0
-        while int(season_num_str) != int(last_season_num_str) + 1:
+
+        while True:
             # 等待显示有效期数
             season_num_elem = WebDriverWait(driver, 10).until(
                     element_has_valid_season_num((By.XPATH, '//*[@id="{}"]/div[2]/div/div[2]/div[1]/div/div[1]/p[2]/span'.format(id)))
@@ -458,9 +229,12 @@ class ChuangMing(SiteBase):
                     element_has_valid_season_num((By.XPATH, '//*[@id="{}"]/div[2]/div/div[3]/div[2]/div/ul[2]/li[1]/div[1]'.format(id)))
                     )
             last_season_num_str = last_season_num_elem.text
+            
+            if int(season_num_str) == int(last_season_num_str) + 1:
+                break;
             time.sleep(1)
+            self.speaker.say("正在等待")
             print(".", end="")
-            tick +=1
         
         print("")
         print("上一期已开奖")
@@ -478,7 +252,7 @@ class ChuangMing(SiteBase):
         total_left_time = hour * 3600 + minute * 60 + second
         
         last_lottery_result = []
-        last_lottery_result.append(last_season_num_str)
+        last_lottery_result.append(int(last_season_num_str))
         for i in range(0, 10):
             num_str = driver.find_element_by_xpath('//*[@id="{}"]/div[2]/div/div[3]/div[2]/div/ul[2]/li[1]/div[2]/span[{}]'.format(id, 1+i)).text
             last_lottery_result.append(int(num_str))
@@ -486,7 +260,7 @@ class ChuangMing(SiteBase):
         return last_lottery_result, total_left_time, season_num_str
     
     # 下注某一博彩游戏
-    # item_name, 博彩游戏名称字符串，如“北京PK10”，“幸运飞艇”等
+    # game_name, 博彩游戏名称字符串，如“北京PK10”，“幸运飞艇”等
     def gamble(self, game_name, wager, limit_time_s = 60):
         """下注项目"""
         
@@ -522,14 +296,16 @@ class ChuangMing(SiteBase):
         print("距离截止投注时间还有：{}时{}分{}秒".format(hour, minute, second))
         
         if hour * 3600 + minute * 60 + second < limit_time_s:
+            self.speaker.say("距离下注截止时间太短，暂不下注")
             print("距离下注截止时间太短，暂不下注")
             return False
         
-        # 下注冠军
+        # 下注
         for item_num in self.name_table.keys():
             sub_wager = self.get_sub_wager(item_num, wager)
             self.gamble_sub(game_name, item_num, sub_wager)
         
+        self.speaker.say("总共下注{}项".format(self.__gamble_count))
         print("总共下注{}项".format(self.__gamble_count))
         return True
     
@@ -539,26 +315,31 @@ class ChuangMing(SiteBase):
         id = self.id_table[game_name]
         item_name = self.name_table[item_num]
         wager_dic = wager
-        if wager_dic:
-            print("下注{}->{}".format(game_name, item_name))
-        else :
+        if not wager_dic:
             print("不下注{}->{}".format(game_name, item_name))
             return
+        
+        if sum(wager_dic.values()) == 0:
+            print("{}金额全为0，无需下注".format(item_name))
+            return
+        
+        key_index_dic = self.get_item_key_index(item_num)
         
         driver = self.driver
         wait = WebDriverWait(driver, 10)
         # 滚动页面到顶部
         driver.execute_script("window.scrollTo(0, 0);")
+        time.sleep(2)
         # 点击项目，如冠军
-        driver.find_element_by_xpath('//*[@id="{}"]/div[2]/div/div[3]/div[1]/nav/ul/li[{}]'.format(id, 1+item_num)).click()
+        wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="{}"]/div[2]/div/div[3]/div[1]/nav/ul/li[{}]'.format(id, 1+item_num)))).click()
         # 点击下注条目，如[冠军]1，[冠军]2，......，[冠军]大，[冠军]小，[冠军]单，[冠军]双，[冠军]龙，[冠军]虎
-        for i in range(0, len(wager)):
-            if wager[i] > 0:
+        for i in range(0, len(wager_dic)):
+            if wager_dic[key_index_dic[i]] > 0:
                 xpath = '//*[@id="{}"]/div[2]/div/div[3]/div[1]/div[1]/div[{}]/ul/li[{}]'.format(id, 1+item_num, 1+i)
                 driver.find_element_by_xpath(xpath).click()
                 self.__gamble_count += 1
         
-        for i in range(0, len(wager)):
+        for i in range(0, len(wager_dic)):
             xpath_key = '//*[@id="{}"]/div[2]/div/div[3]/div[1]/div[2]/div[4]/div[1]/ul[{}]/li[1]'.format(id, i+1)
             xpath_value = '//*[@id="{}"]/div[2]/div/div[3]/div[1]/div[2]/div[4]/div[1]/ul[{}]/li[2]/input'.format(id, i+1)
             try:
@@ -567,7 +348,8 @@ class ChuangMing(SiteBase):
                 value_elem.click()
                 value_elem.clear()
                 value_elem.send_keys(str(wager_dic[key_elem.text]))
-                print("{} 金额{}".format(key_elem.text, str(wager_dic[key_elem.text])))
+                self.speaker.say("下注{} 金额{}".format(key_elem.text, str(wager_dic[key_elem.text])))
+                print("下注{} 金额{}".format(key_elem.text, str(wager_dic[key_elem.text])))
             except NoSuchElementException:
                 pass
         
@@ -615,6 +397,7 @@ class ChuangMing(SiteBase):
         
         while total_sec != 0 and first_total_sec >= total_sec:
             if total_sec != displayed_time and total_sec % 10 == 0:
+                self.speaker.say("距离截止投注时间还有：{}时{}分{}秒".format(hour, minute, second))
                 print("距离截止投注时间还有：{}时{}分{}秒".format(hour, minute, second))
                 displayed_time = total_sec
             time.sleep(0.5)
@@ -640,6 +423,11 @@ class ChuangMing(SiteBase):
         driver.get(self.__url_record)
         wait = WebDriverWait(driver, 10)
         
+        if self.__gamble_count == 0:
+            self.speaker.say("无下注，无需撤销")
+            print("无下注，无需撤销")
+            return
+
         # 点击未开奖, 点击一次撤销后，页面刷新，需要重新点击未开奖过滤
         # 暂不处理这个问题，因此只支持首页记录的撤销
         #self.wait_element_stale_and_click('//*[@id="red"]/div/div[2]/div[2]/ul/li[3]/label[2]')
@@ -649,9 +437,6 @@ class ChuangMing(SiteBase):
         wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="red"]/div/div[2]/div[2]/table/tr[2]/td[1]')))
         elements = driver.find_elements_by_xpath('//*[@id="red"]/div/div[2]/div[2]/table/*')
         print("当前页共显示{}项投注记录".format(len(elements) - 1)) # 减去1，除去表头
-        if self.__gamble_count == 0:
-            print("无下注，无需撤销")
-            return
         
         for i in range(0, len(elements)):
             # 撤销链接
