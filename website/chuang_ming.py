@@ -5,9 +5,6 @@
 创名彩票站点的入口地址是http://cm909.com
 """
 
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -33,11 +30,6 @@ class ChuangMing(SiteBase):
             raise err
     
     def login(self, with_captcha = True):
-        chrome_options = Options()
-        #   chrome_options.add_argument("--headless")       # define headless
-        self.driver = webdriver.Chrome(
-                executable_path=ChromeDriverManager().install(),
-                options=chrome_options)
         driver = self.driver
         # driver.set_window_size(1920, 1080)
         driver.maximize_window()
@@ -62,26 +54,23 @@ class ChuangMing(SiteBase):
         
     def login_input(self, with_captcha = True):
         driver = self.driver
-        wait = WebDriverWait(driver, 10)
         # 输入用户名
-        wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="red"]/div/div[1]/header/div/div/div[1]/input')))
-        driver.find_element_by_xpath('//*[@id="red"]/div/div[1]/header/div/div/div[1]/input').click()
+        self.wait_element_stale_and_click('//*[@id="red"]/div/div[1]/header/div/div/div[1]/input')
         driver.find_element_by_xpath('//*[@id="red"]/div/div[1]/header/div/div/div[1]/input').clear()
         driver.find_element_by_xpath('//*[@id="red"]/div/div[1]/header/div/div/div[1]/input').send_keys(self.username)
         # 输入密码
-        wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="red"]/div/div[1]/header/div/div/div[2]/input')))
-        driver.find_element_by_xpath('//*[@id="red"]/div/div[1]/header/div/div/div[2]/input').click()
+        self.wait_element_stale_and_click('//*[@id="red"]/div/div[1]/header/div/div/div[2]/input')
         driver.find_element_by_xpath('//*[@id="red"]/div/div[1]/header/div/div/div[2]/input').clear()
         driver.find_element_by_xpath('//*[@id="red"]/div/div[1]/header/div/div/div[2]/input').send_keys(self.password)
         # 输入验证码
         if with_captcha:
             captcha = input("输入验证码：")
-            wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="red"]/div/div[1]/header/div/div/div[3]/input')))
-            driver.find_element_by_xpath('//*[@id="red"]/div/div[1]/header/div/div/div[3]/input').click()
+            self.wait_element_stale_and_click('//*[@id="red"]/div/div[1]/header/div/div/div[3]/input')
             driver.find_element_by_xpath('//*[@id="red"]/div/div[1]/header/div/div/div[3]/input').clear()
             driver.find_element_by_xpath('//*[@id="red"]/div/div[1]/header/div/div/div[3]/input').send_keys(captcha)
 
-        driver.find_element_by_xpath('//*[@id="red"]/div/div[1]/header/div/div/button[1]').click()
+        self.wait_element_stale_and_click('//*[@id="red"]/div/div[1]/header/div/div/button[1]')
+        
         
     def get_acount_info(self):
         pass
@@ -331,12 +320,12 @@ class ChuangMing(SiteBase):
         driver.execute_script("window.scrollTo(0, 0);")
         time.sleep(2)
         # 点击项目，如冠军
-        wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="{}"]/div[2]/div/div[3]/div[1]/nav/ul/li[{}]'.format(id, 1+item_num)))).click()
+        self.wait_element_stale_and_click('//*[@id="{}"]/div[2]/div/div[3]/div[1]/nav/ul/li[{}]'.format(id, 1+item_num))
         # 点击下注条目，如[冠军]1，[冠军]2，......，[冠军]大，[冠军]小，[冠军]单，[冠军]双，[冠军]龙，[冠军]虎
         for i in range(0, len(wager_dic)):
             if wager_dic[key_index_dic[i]] > 0:
                 xpath = '//*[@id="{}"]/div[2]/div/div[3]/div[1]/div[1]/div[{}]/ul/li[{}]'.format(id, 1+item_num, 1+i)
-                driver.find_element_by_xpath(xpath).click()
+                self.wait_element_stale_and_click(xpath)
                 self.__gamble_count += 1
         
         for i in range(0, len(wager_dic)):
@@ -344,8 +333,7 @@ class ChuangMing(SiteBase):
             xpath_value = '//*[@id="{}"]/div[2]/div/div[3]/div[1]/div[2]/div[4]/div[1]/ul[{}]/li[2]/input'.format(id, i+1)
             try:
                 key_elem = driver.find_element_by_xpath(xpath_key)
-                value_elem = driver.find_element_by_xpath(xpath_value)
-                value_elem.click()
+                value_elem = self.wait_element_stale_and_click(xpath_value)
                 value_elem.clear()
                 value_elem.send_keys(str(wager_dic[key_elem.text]))
                 self.speaker.say("下注{} 金额{}".format(key_elem.text, str(wager_dic[key_elem.text])))
@@ -354,7 +342,7 @@ class ChuangMing(SiteBase):
                 pass
         
         # 点击立即投注 
-        driver.find_element_by_xpath('//*[@id="{}"]/div[2]/div/div[3]/div[1]/div[2]/button'.format(id)).click()
+        self.wait_element_stale_and_click('//*[@id="{}"]/div[2]/div/div[3]/div[1]/div[2]/button'.format(id))
         # 等待可再次下注
         wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="{}"]/div[2]/div/div[3]/div[1]/div[2]/button'.format(id))))
 
@@ -379,7 +367,7 @@ class ChuangMing(SiteBase):
             raise Exception("页面信息加载错误，应显示{}第xxxxxxxxxxx期".format(game_name))
         
         # 获取截止投注时间
-         # 等待显示有效倒计时，秒数不是0
+        # 等待显示有效倒计时，秒数不是0
         season_num_elem = WebDriverWait(driver, 10).until(
                     element_has_valid_count_down((By.XPATH, '//*[@id="{}"]/div[2]/div/div[2]/div[1]/div/div[2]/span[5]'.format(id)))
                     )
@@ -451,8 +439,8 @@ class ChuangMing(SiteBase):
                 driver.find_element_by_xpath(xpath_cancel)
                 # 等待链接所显示的位置稳定后点击
                 self.wait_element_stale_and_click(xpath_cancel)
-                confirm = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div/div[3]/button/span')))
-                confirm.click()
+                wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div/div[3]/button/span')))
+                self.wait_element_stale_and_click('/html/body/div[2]/div/div[3]/button/span')
                 print("撤销一项：{} {} 金额{}".format(driver.find_element_by_xpath(xpath_game_name).text,
                       driver.find_element_by_xpath(xpath_item_name).text,
                       driver.find_element_by_xpath(xpath_money).text))

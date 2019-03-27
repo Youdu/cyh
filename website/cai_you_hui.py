@@ -161,14 +161,6 @@ class CaiYouHui(SiteBase):
         element = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="elem_xyft"]/a[5]')))
         element.click()
         time.sleep(1)
-    
-    def input_value(self, xpath, value):
-        driver = self.driver
-        wait = WebDriverWait(driver, 10)
-        element = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
-        element.click()
-        element.clear()
-        element.send_keys(str(value))
         
     def wait_result(self, game_name):
         """等待开奖结果"""
